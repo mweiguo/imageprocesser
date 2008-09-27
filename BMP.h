@@ -35,7 +35,7 @@ struct TRIPLE
 template< typename T >
 struct QUAD
 {
-    T w, x, y, z;
+    T x, y, z, a;
 };
 
 typedef TRIPLE<unsigned char> RGBDATA;
@@ -61,13 +61,13 @@ struct BFHEADER
     uint32 bfOffBits;
 };
 
-typedef struct BICHEADER {
-  uint32    bcSize; 
-  uint16    bcWidth; 
-  uint16    bcHeight; 
-  uint16    bcPlanes; 
-  uint16    bcBitCount; 
-} BITMAPCOREHEADER, *PBITMAPCOREHEADER; 
+struct BICHEADER {
+    uint32    bcSize; 
+    uint16    bcWidth; 
+    uint16    bcHeight; 
+    uint16    bcPlanes; 
+    uint16    bcBitCount; 
+};
 
 struct BIHEADER
 {
@@ -84,13 +84,14 @@ struct BIHEADER
     uint32 biClrImportant;
 };
 
-struct BIV4HEADER{
+struct BIV4HEADER
+{
     uint32        bV4Size;
     int32         bV4Width;
     int32         bV4Height;
     uint16        bV4Planes;
     uint16        bV4BitCount;
-    uint32        bV4V4Compression;
+    uint32        bV4Compression;
     uint32        bV4SizeImage;
     int32         bV4XPelsPerMeter;
     int32         bV4YPelsPerMeter;
@@ -107,12 +108,13 @@ struct BIV4HEADER{
     uint32        bV4GammaBlue;
 };
 
-struct BIV5HEADER{ 
+struct BIV5HEADER
+{ 
     uint32        bV5Size; 
     int32         bV5Width; 
     int32         bV5Height; 
-    uint16         bV5Planes; 
-    uint16         bV5BitCount; 
+    uint16        bV5Planes; 
+    uint16        bV5BitCount; 
     uint32        bV5Compression; 
     uint32        bV5SizeImage; 
     int32         bV5XPelsPerMeter; 
@@ -134,6 +136,96 @@ struct BIV5HEADER{
     uint32        bV5Reserved; 
 };
 
+class InfoHeaderWrapper
+{
+public:
+    virtual void* headerptr () = 0;
+    virtual int   headersize() = 0;
+    virtual int   bitcount() = 0;
+    virtual void  bitcount( int v ) = 0;
+    virtual int   width() = 0;
+    virtual int   height() = 0;
+    virtual int   imagesize() = 0;
+    virtual void  imagesize( int size ) = 0;
+    virtual uint32 compression () = 0;
+    virtual void compression ( uint32 v ) = 0;
+    virtual int   clrused () = 0;
+};
+
+#define BI_RGB        0L
+#define BI_RLE8       1L
+#define BI_RLE4       2L
+#define BI_BITFIELDS  3L
+#define BI_JPEG       4L
+#define BI_PNG        5L
+
+class CIHeaderWrapper : public InfoHeaderWrapper
+{
+    BICHEADER bic;
+public:
+    virtual void* headerptr ()       	  { return &bic; }
+    virtual int   headersize() 	     	  { return sizeof(BICHEADER); }
+    virtual int   bitcount() 	     	  { return bic.bcBitCount; }
+    virtual void  bitcount( int v )  	  { bic.bcBitCount = v; }
+    virtual int   width()            	  { return bic.bcWidth; }
+    virtual int   height()           	  { return bic.bcHeight; }
+    virtual int   imagesize()        	  { return 0; }
+    virtual void  imagesize( int size )   {}
+    virtual uint32 compression ()         { return BI_RGB; }
+    virtual void  compression ( uint32 v) {}
+    virtual int   clrused ()              { return 0; }
+};
+
+class IHeaderWrapper : public InfoHeaderWrapper
+{
+    BIHEADER bi;
+public:
+    virtual void* headerptr ()       	  { return &bi; }
+    virtual int   headersize() 	     	  { return sizeof(BIHEADER); }
+    virtual int   bitcount() 	     	  { return bi.biBitCount; }
+    virtual void  bitcount( int v )  	  { bi.biBitCount = v; }
+    virtual int   width()            	  { return bi.biWidth; }
+    virtual int   height()           	  { return bi.biHeight; }
+    virtual int   imagesize()        	  { return bi.biSizeImage; }
+    virtual void  imagesize( int size )   { bi.biSizeImage = size; }
+    virtual uint32 compression ()         { return bi.biCompression; }
+    virtual void compression ( uint32 v)  { bi.biCompression = v; }
+    virtual int   clrused ()              { return bi.biClrUsed; }
+};
+
+class IV4HeaderWrapper : public InfoHeaderWrapper
+{
+    BIV4HEADER biv4;
+public:
+    virtual void* headerptr ()	     	  { return &biv4; }
+    virtual int   headersize() 	     	  { return sizeof(BIV4HEADER); }
+    virtual int   bitcount() 	     	  { return biv4.bV4BitCount; }
+    virtual void  bitcount( int v )  	  { biv4.bV4BitCount = v; }
+    virtual int   width()            	  { return biv4.bV4Width; }
+    virtual int   height()           	  { return biv4.bV4Height; }
+    virtual int   imagesize()        	  { return biv4.bV4SizeImage; }
+    virtual void  imagesize( int size )   { biv4.bV4SizeImage = size; }
+    virtual uint32 compression ()         { return biv4.bV4Compression; }
+    virtual void compression ( uint32 v)  { biv4.bV4Compression = v; }
+    virtual int   clrused ()              { return biv4.bV4ClrUsed; }
+};
+
+class IV5HeaderWrapper : public InfoHeaderWrapper
+{
+    BIV5HEADER biv5;
+public:
+    virtual void* headerptr () 	     	  { return &biv5; }
+    virtual int   headersize() 	     	  { return sizeof(BIV5HEADER); }
+    virtual int   bitcount() 	     	  { return biv5.bV5BitCount; }
+    virtual void  bitcount( int v )  	  { biv5.bV5BitCount = v; }
+    virtual int   width()            	  { return biv5.bV5Width; }
+    virtual int   height()           	  { return biv5.bV5Height; }
+    virtual int   imagesize()        	  { return biv5.bV5SizeImage; }
+    virtual void  imagesize( int size )   { biv5.bV5SizeImage = size; }
+    virtual uint32 compression ()         { return biv5.bV5Compression; }
+    virtual void compression ( uint32 v)  { biv5.bV5Compression = v; }
+    virtual int   clrused ()              { return biv5.bV5ClrUsed; }
+};
 
 class BMPProcesser  
 {
@@ -156,11 +248,43 @@ public:
     void to_24bit ();
 private:
     BFHEADER bf;
-    BIHEADER bi;
+    InfoHeaderWrapper *_pih;
     void* imageData;
-    int imageSize;
+    RGBA32* _colorTable;
+    int _colorEntries;
+
+};
+
+class CFileWrapper
+{
+    FILE* _file;
+public:
+    CFileWrapper ( const char* name, const char* flag ) {
+	if ( 0 == (_file = fopen ( name, flag )) )
+	    throw std::logic_error("Cannot open this file" );
+    }
+    ~CFileWrapper () {
+	fclose ( _file );
+    }
+    FILE* handle() { return _file; }
+};
+
+class CMallocWrapper
+{
+    void* _data;
+public:
+    CMallocWrapper ( int size ) {
+	if ( 0 == (_data = malloc ( size )) )
+	    throw std::logic_error("out of memory" );
+    }
+    ~CMallocWrapper () {
+	free ( _data );
+    }
+    void* handle() { return _data; }
 };
 
 void* changebitcnt_16to24 ( void* data, int32& size );
 void* changebitcnt_32to24 ( void* data, int32& size );
 
+void* decode_rle8 ( void* data, int32 size, int32 width, int32 height );
+void* decode_rle4 ( void* data, int32 size, int32 width, int32 height );
