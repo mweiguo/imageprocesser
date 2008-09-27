@@ -6,8 +6,6 @@
 
 using namespace std;
 
-/** appname -i bmpInFile -o bmpOutFile -c "smooth | sharpen | reverse | togray |..."
- */
 int main( int argc, const char* argv[] )
 {
     LOG_LEVEL ( tinyLog::debug );

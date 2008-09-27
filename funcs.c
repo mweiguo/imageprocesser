@@ -25,94 +25,98 @@
  * To use them in your methods just type 'your_name[0]' for the first, etc
  */
 
+// ------------------------------------------------------------------------
+
 int PrintInfo (char *args [])
 {
-	printf ("---------------------------------------------------\n");
-	printf ("CLiP - Command Line Parser v1.2\n");
-	printf ("---------------------------------------------------\n\n");
+    printf ("---------------------------------------------------\n");
+    printf ("im - Image Processer v0.1\n");
+    printf ("---------------------------------------------------\n\n");
 	
-	printf ("-h  --help                       Displays this help\n");
-	printf ("    --name [your_name,other]     Links 2 names\n");
-	printf ("-d         [a_name]              Outputs a_name\n\n");
+    printf ("-h  --help                                         Displays this help\n");
+    printf ("-smooth inputImage outputImage bSmooth     	    smooth or sharpen image\n");
+    printf ("-negative inputImage outputImage           	    negative image\n");
+    printf ("-togray inputImage outputImage             	    change image to gray\n");
+    printf ("-lighten inputImage outputImage intensity  	    lighten image\n");
+    printf ("-to24bit inputImage outputImage            	    change bitcount to 24bit\n");
 	
-	printf ("---------------------------------------------------\n");
-	printf ("CLiP is free and licensed under the GNU General\n");
-	printf ("Public License; therefore you are free to use, edit\n");
-	printf ("and redistribute the source code.\n");
-	printf ("Homepage is at http://giulio.hewle.com/pf/clip\n\n");
-	
-	printf ("This software is platform independent and developed\n");
-	printf ("in C by Giulio Bai <giulio@hewle.com>\n\n");
-	
-	printf ("Feel absolutly free to edit the code and submit your\n");
-	printf ("changes: any help is kindly appreciated!\n\n");
-	printf ("More info at http://giulio.hewle.com/pf/cclip\n");
-	printf ("---------------------------------------------------\n\n");
-	
-	return 0;
+    return 0;
 }
+
+// ------------------------------------------------------------------------
 
 int Smooth ( char* args[] )
 {
+    bool bSmooth = atoi(args[2]);
     int matrixSmooth[9] = {1,2,1,2,4,2,1,2,1};
     int matrixSharpen[9] = {-1,-2,-1,-2,19,-2,-1,-2,-1};
     try {
 	BMPProcesser bmp ;
-	bmp.read_bmp( infile );
-	bmp.imageSoomth(matrixSmooth);
-	bmp.write_bmp( outfile );
+	bmp.read_bmp( args[0] );
+	if ( bSmooth )	bmp.imageSoomth ( matrixSmooth );
+	else            bmp.imageSoomth ( matrixSharpen );
+	bmp.write_bmp( args[1] );
     } catch ( exception& e ) {
 	LOG_ERROR ( e.what() );
     }
 }
+
+// ------------------------------------------------------------------------
 
 int Negative ( char* args[] )
 {
     try {
 	BMPProcesser bmp ;
-	bmp.read_bmp( infile );
+	bmp.read_bmp( args[0] );
 	bmp.image_negative();
-	bmp.write_bmp( outfile );
+	bmp.write_bmp( args[1] );
     } catch ( exception& e ) {
 	LOG_ERROR ( e.what() );
     }
 }
+
+// ------------------------------------------------------------------------
 
 int ToGray ( char* args[] )
 {
     try {
 	BMPProcesser bmp ;
-	bmp.read_bmp( infile );
+	bmp.read_bmp( args[0] );
 	bmp.imageToGray();
-	bmp.write_bmp( outfile );
+	bmp.write_bmp( args[1] );
     } catch ( exception& e ) {
 	LOG_ERROR ( e.what() );
     }
 }
 
+// ------------------------------------------------------------------------
 
 int Lighten ( char* args[] )
 {
+    float intensity = atof ( args[2] );
     try {
 	BMPProcesser bmp ;
-	bmp.read_bmp( infile );
-	bmp.imageLighten( lightenNum );
-	bmp.write_bmp( outfile );
+	bmp.read_bmp( args[0] );
+	bmp.imageLighten( intensity );
+	bmp.write_bmp( args[1] );
     } catch ( exception& e ) {
 	LOG_ERROR ( e.what() );
     }
 }
 
+// ------------------------------------------------------------------------
 
 int To24Bit ( char* args[] )
 {
     try {
 	BMPProcesser bmp ;
-	bmp.read_bmp( infile );
+	bmp.read_bmp( args[0] );
 	bmp.to_24bit();
-	bmp.write_bmp( outfile );
+	bmp.write_bmp( args[1] );
     } catch ( exception& e ) {
 	LOG_ERROR ( e.what() );
     }
 }
+
+// ------------------------------------------------------------------------
 
