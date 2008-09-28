@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
+#include "stdafx.h"
+#include "BMP.h"
+using namespace std;
 /*
  * Put the functions you like in this file, included in 'clip.c'
  *
@@ -33,12 +34,12 @@ int PrintInfo (char *args [])
     printf ("im - Image Processer v0.1\n");
     printf ("---------------------------------------------------\n\n");
 	
-    printf ("-h  --help                                         Displays this help\n");
-    printf ("-smooth inputImage outputImage bSmooth     	    smooth or sharpen image\n");
-    printf ("-negative inputImage outputImage           	    negative image\n");
-    printf ("-togray inputImage outputImage             	    change image to gray\n");
-    printf ("-lighten inputImage outputImage intensity  	    lighten image\n");
-    printf ("-to24bit inputImage outputImage            	    change bitcount to 24bit\n");
+    printf ("  -h  --help                                         Displays this help\n");
+    printf ("  -smooth inputImage outputImage bSmooth     	    smooth or sharpen image\n");
+    printf ("  -negative inputImage outputImage           	    negative image\n");
+    printf ("  -togray inputImage outputImage             	    change image to gray\n");
+    printf ("  -lighten inputImage outputImage intensity  	    lighten image\n");
+    printf ("  -to24bit inputImage outputImage            	    change bitcount to 24bit\n");
 	
     return 0;
 }

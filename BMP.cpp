@@ -247,7 +247,7 @@ bool BMPProcesser::imageSoomth( int *matrix )
     //对整型空间内数据进行归一处理，将结果保存到影响数据内
     if (!pixelNormalization( tmp ))
         return false;
-    free( tmp );
+    free( tmp );ptr
     return true;        
 }
 
@@ -309,7 +309,37 @@ void BMPProcesser::to_24bit ()
         imageData = newdata;
         _pih->imagesize( newsize );
         break;
+    case 8:
+	break;
+    case 4:
+        newdata = changebitcnt_4to24 ( imageData, newsize, _colorTable );
+        _pih->bitcount( 24 );
+        bf.bfSize = bf.bfSize - _pih->imagesize() + newsize;
+        free(imageData);
+        imageData = newdata;
+        _pih->imagesize( newsize );
+        break;
+	break;
     }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void* changebitcnt_4to24 ( void* data, int32& size, RGBA32* colorTable )
+{
+    LOG_DEBUG ("changebitcnt_4to24 data=%0x, size=%d, colorTable=%0x", data, size, colorTable);
+    uint8* p = (uint8*)data;
+    uint8* end = (uint8*)((uint8*)data+size);
+    RGB24* ptr = (RGB24*)malloc( size * 3 );
+    RGB24* pbegin = ptr;
+    
+    for ( ; p!=end; ++p, ++ptr ) {
+        ptr->x = colorTable[*p].x;
+        ptr->y = colorTable[*p].y;
+        ptr->z = colorTable[*p].z;
+    }
+    size = ((int8*)ptr - (int8*)pbegin);
+    return (void*)pbegin;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -319,13 +349,15 @@ void* changebitcnt_16to24 ( void* data, int32& size )
     R5G6B5* p = (R5G6B5*)data;
     R5G6B5* end = (R5G6B5*)((uint8*)data+size);
     RGB24* ptr = (RGB24*)malloc( size * 3 / 2 );
+    RGB24* pbegin = ptr;
+
     for ( ; p!=end; ++p, ++ptr ) {
         ptr->x = (int8)(255 * p->r / 32.0);
         ptr->y = (int8)(255 * p->g / 64);
         ptr->z = (int8)(255 * p->b / 32);
     }
-    size = ((int8*)ptr - (int8*)data);
-    return (void*)ptr;
+    size = ((int8*)ptr - (int8*)pbegin);
+    return (void*)pbegin;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -404,6 +436,8 @@ void* decode_rle4 ( void* data, int32 size, int32 width, int32 height )
     uint8* dst = (uint8*)malloc ( width * height );
     uint8* pbegin = dst;
 
+    uint8* pdata = (uint8*)data;
+
     for ( ; p!=end; ++p ) {
         uint8 cnt = *p;
         uint8 next = *++p;
@@ -418,11 +452,10 @@ void* decode_rle4 ( void* data, int32 size, int32 width, int32 height )
         } else {   // escape
             switch ( next ) {
             case 0:     // end of line, check column number
-                LOG_DEBUG ( "one line is processed, pixel number = %d", dst - pbegin );
                 if ( (dst - pbegin) % width ) {
-                    std::stringstream ss;
-                    ss << "column number incorrect " << dst - pbegin;
-                    throw std::logic_error ( ss.str().c_str() );
+		    char tmp[512];
+		    sprintf ( tmp, "(%0x, %0x, %0x, %0x, %0x, %0x, %0x), column number incorrect, offset from image data begin = %x,  (%0x, %0x, %0x, %0x, %0x, %0x, %0x)", *pdata, *(pdata+1), *(pdata+2), *(pdata+3), *(pdata+4), *(pdata+5), *(pdata+6), p - (uint8*)data, *(p-3), *(p-2), *(p-1), *p, *(p+1), *(p+2), *(p+3) );
+                    throw std::logic_error ( tmp );
                 }
                 break;
             case 1:     // end of bitmap
@@ -436,11 +469,15 @@ void* decode_rle4 ( void* data, int32 size, int32 width, int32 height )
                 }
                 break; 
             default:    // absolute mode, must be align on word boundary
-                cnt = next % 2 ? next + 1 : next;
-                for ( int i=0; i<cnt; i+=2 ) {
-                    *++dst = *(p+1) & 0xF0;
-                    *++dst = *(++p) & 0x0F;
-                }
+		for ( int i=0; i<next; i++ ) {
+                    *++dst = *(p+1+i) & 0xF0;
+		    if ( ++i == next ) break;
+                    *++dst = *(p+i) & 0x0F;
+		}
+		
+		cnt = (int)(next / 4) + (next % 4 != 0 ? 1 : 0);
+		cnt *= 2;
+		p += cnt;
                 break;
             }
         }

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int main( int argc, const char* argv[] )
+int main( int argc, char* argv[] )
 {
     LOG_LEVEL ( tinyLog::debug );
     LOG_FORMAT ( "" );

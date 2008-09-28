@@ -283,6 +283,7 @@ public:
     void* handle() { return _data; }
 };
 
+void* changebitcnt_4to24 ( void* data, int32& size, RGBA32* _colorTable );
 void* changebitcnt_16to24 ( void* data, int32& size );
 void* changebitcnt_32to24 ( void* data, int32& size );
 

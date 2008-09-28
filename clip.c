@@ -15,21 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
+#include "stdafx.h"
 #include "clip.h"
 
 /* Include the right file with your functions! */
-#include "../funcs.c"
+#include "funcs.c"
 
 /* The maximum number of option you want in your
  * program to be enabled.
  * NOTE this number has to correspond to the size
  * of the 'options' struct.
  */
-#define NUM_OPTS 4
+#define NUM_OPTS 7
 
 /* The max number of arguments the user may specify
  * after an option.
