@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "bmp.h"
+#include "BMP.h"
 #include <stdio.h>
 #include <string.h>
 #include "clip.h"

@@ -34,7 +34,7 @@ int PrintInfo (char *args [])
     printf ("im - Image Processer v0.1\n");
     printf ("---------------------------------------------------\n\n");
 	
-    printf ("  -h  --help                                         Displays this help\n");
+    printf ("  -h  --help                                           Displays this help\n");
     printf ("  -smooth inputImage outputImage bSmooth     	    smooth or sharpen image\n");
     printf ("  -negative inputImage outputImage           	    negative image\n");
     printf ("  -togray inputImage outputImage             	    change image to gray\n");

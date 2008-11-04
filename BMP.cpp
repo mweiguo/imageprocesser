@@ -3,6 +3,92 @@
 
 // -------------------------------------------------------------------------------------------------
 
+void CIHeaderWrapper::display ()
+{
+    LOG_INFO ( "CORE INFO HEADER:" );
+    LOG_INFO ( "\tHeaderSize    = %d", bic.bcSize );
+    LOG_INFO ( "\tImageWidth    = %d", bic.bcWidth );
+    LOG_INFO ( "\tImageHeight   = %d", bic.bcHeight );
+    LOG_INFO ( "\tPlanes        = %d", bic.bcPlanes );
+    LOG_INFO ( "\tbcBitCount    = %d", bic.bcBitCount );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void IHeaderWrapper::display ()
+{
+    LOG_INFO ( "INFO HEADER:" );
+    LOG_INFO ( "\tHeaderSize    = %d", bi.biSize );
+    LOG_INFO ( "\tImageWidth    = %d", bi.biWidth );
+    LOG_INFO ( "\tImageHeight   = %d", bi.biHeight );
+    LOG_INFO ( "\tPlanes        = %d", bi.biPlanes );
+    LOG_INFO ( "\tbcBitCount    = %d", bi.biBitCount );
+    LOG_INFO ( "\tCompression   = %d", bi.biCompression );
+    LOG_INFO ( "\tImageSize     = %d", bi.biSizeImage );
+    LOG_INFO ( "\tXPelsPerMeter = %d", bi.biXPelsPerMeter );
+    LOG_INFO ( "\tYPelsPerMeter = %d", bi.biYPelsPerMeter );
+    LOG_INFO ( "\tClrUsed       = %d", bi.biClrUsed );
+    LOG_INFO ( "\tClrImportant  = %d", bi.biClrImportant );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void IV4HeaderWrapper::display ()
+{
+    LOG_INFO ( "INFO V4 HEADER:" );
+    LOG_INFO ( "\tHeaderSize    = %d", biv4.bV4Size );
+    LOG_INFO ( "\tImageWidth    = %d", biv4.bV4Width );
+    LOG_INFO ( "\tImageHeight   = %d", biv4.bV4Height );
+    LOG_INFO ( "\tPlanes        = %d", biv4.bV4Planes );
+    LOG_INFO ( "\tbcBitCount    = %d", biv4.bV4BitCount );
+    LOG_INFO ( "\tCompression   = %d", biv4.bV4Compression );
+    LOG_INFO ( "\tImageSize     = %d", biv4.bV4SizeImage );
+    LOG_INFO ( "\tXPelsPerMeter = %d", biv4.bV4XPelsPerMeter );
+    LOG_INFO ( "\tYPelsPerMeter = %d", biv4.bV4YPelsPerMeter );
+    LOG_INFO ( "\tClrUsed       = %d", biv4.bV4ClrUsed );
+    LOG_INFO ( "\tClrImportant  = %d", biv4.bV4ClrImportant );
+    LOG_INFO ( "\tRedMask       = %d", biv4.bV4RedMask );
+    LOG_INFO ( "\tGreenMask     = %d", biv4.bV4GreenMask );
+    LOG_INFO ( "\tBlueMask      = %d", biv4.bV4BlueMask );
+    LOG_INFO ( "\tAlphaMask     = %d", biv4.bV4AlphaMask );
+    LOG_INFO ( "\tCSType        = %d", biv4.bV4CSType );
+    CIEXYZTRIPLE& t = biv4.bV4Endpoints;
+    LOG_INFO ( "\tEndPoints     = (%d,%d,%d), (%d,%d,%d), (%d,%d,%d)", t.x.x, t.x.y, t.x.z, t.y.x, t.y.y, t.y.z, t.z.x, t.z.y, t.z.z );
+    LOG_INFO ( "\tGammaRed      = %d", biv4.bV4GammaRed );
+    LOG_INFO ( "\tGammaGreen    = %d", biv4.bV4GammaGreen );
+    LOG_INFO ( "\tGammaBlue     = %d", biv4.bV4GammaBlue );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void IV5HeaderWrapper::display ()
+{
+    LOG_INFO ( "INFO V5 HEADER:" );
+    LOG_INFO ( "\tHeaderSize    = %d", biv5.bV5Size );
+    LOG_INFO ( "\tImageWidth    = %d", biv5.bV5Width );
+    LOG_INFO ( "\tImageHeight   = %d", biv5.bV5Height );
+    LOG_INFO ( "\tPlanes        = %d", biv5.bV5Planes );
+    LOG_INFO ( "\tbcBitCount    = %d", biv5.bV5BitCount );
+    LOG_INFO ( "\tCompression   = %d", biv5.bV5Compression );
+    LOG_INFO ( "\tImageSize     = %d", biv5.bV5SizeImage );
+    LOG_INFO ( "\tXPelsPerMeter = %d", biv5.bV5XPelsPerMeter );
+    LOG_INFO ( "\tYPelsPerMeter = %d", biv5.bV5YPelsPerMeter );
+    LOG_INFO ( "\tClrUsed       = %d", biv5.bV5ClrUsed );
+    LOG_INFO ( "\tClrImportant  = %d", biv5.bV5ClrImportant );
+    LOG_INFO ( "\tRedMask       = %d", biv5.bV5RedMask );
+    LOG_INFO ( "\tGreenMask     = %d", biv5.bV5GreenMask );
+    LOG_INFO ( "\tBlueMask      = %d", biv5.bV5BlueMask );
+    LOG_INFO ( "\tAlphaMask     = %d", biv5.bV5AlphaMask );
+    LOG_INFO ( "\tCSType        = %d", biv5.bV5CSType );
+    CIEXYZTRIPLE& t = biv5.bV5Endpoints;
+    LOG_INFO ( "\tEndPoints     = (%d,%d,%d), (%d,%d,%d), (%d,%d,%d)", t.x.x, t.x.y, t.x.z, t.y.x, t.y.y, t.y.z, t.z.x, t.z.y, t.z.z );
+    LOG_INFO ( "\tGammaRed      = %d", biv5.bV5GammaRed );
+    LOG_INFO ( "\tGammaGreen    = %d", biv5.bV5GammaGreen );
+    LOG_INFO ( "\tGammaBlue     = %d", biv5.bV5GammaBlue );
+}
+
+// -------------------------------------------------------------------------------------------------
+
 BMPProcesser::BMPProcesser()
 {
     imageData = NULL;
@@ -45,8 +131,12 @@ void BMPProcesser::read_bmp( const char* imageName )
     default: throw std::logic_error("unknown bmp header");
     }
     fread( _pih->headerptr(), sizeof(uint8), _pih->headersize(), file.handle() );
+
     if ( _pih->imagesize() == 0 && _pih->compression() == BI_RGB )
         _pih->imagesize ( int(_pih->width() * _pih->height() * _pih->bitcount() / 8.0) );
+
+    LOG_INFO ("NAME : %s", imageName);
+    _pih->display();
 
     // read color table
     _colorEntries = 0;
@@ -61,31 +151,33 @@ void BMPProcesser::read_bmp( const char* imageName )
         _colorEntries = 2;
         break;
     }
-    _colorTable = (RGBA32*)malloc( _colorEntries * sizeof(RGBA32) );
-    fread( _colorTable, sizeof(uint8), _colorEntries * sizeof(RGBA32), file.handle() );
-
-    if ( 0 == (imageData = malloc( _pih->imagesize() )))
-        throw std::out_of_range ( "no more memory allocate for loading image" );
+    if ( 0 != _colorEntries ) {
+	_colorTable = (RGBA32*)malloc( _colorEntries * sizeof(RGBA32) );
+	fread( _colorTable, sizeof(uint8), _colorEntries * sizeof(RGBA32), file.handle() );
+    }
 
     // read image data
+    if ( 0 == (imageData = malloc( _pih->imagesize() )))
+        throw std::out_of_range ( "no more memory allocate for loading image" );
     fread ( imageData, sizeof(uint8), _pih->imagesize(), file.handle() );
     
-    // decode image data if needed
+    // decompress image data if needed
     void* newdata;
+    int32 width = _pih->width(), height = _pih->height();
     switch ( _pih->compression() ) {
     case BI_RLE8:
         newdata = decode_rle8 ( imageData, _pih->imagesize(), _pih->width(), _pih->height() );
         if ( 0 != newdata ) {
-            _pih->imagesize ( _pih->width() * _pih->height() );
+            _pih->imagesize ( width * height );
             free ( imageData );
             imageData = newdata;
             _pih->compression ( BI_RGB );
         }
         break;
     case BI_RLE4:
-        newdata = decode_rle4 ( imageData, _pih->imagesize(), _pih->width(), _pih->height() );
+        newdata = decode_rle4 ( imageData, _pih->imagesize(), width, height );
         if ( 0 != newdata ) {
-            _pih->imagesize ( _pih->width() * _pih->height() );
+            _pih->imagesize ( width * height );
             free ( imageData );
             imageData = newdata;
             _pih->compression ( BI_RGB );
@@ -102,9 +194,6 @@ void BMPProcesser::read_bmp( const char* imageName )
     default:
         throw std::logic_error ("unknown compression method");
     }
-
-    LOG_INFO ("NAME : %s", imageName);
-    LOG_INFO ("WIDTH x HEIGHT x BITCOUNT x IMAGESIZE : %d x %d x %d x %d", _pih->width(), _pih->height(), _pih->bitcount(), _pih->imagesize() );
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -112,12 +201,13 @@ void BMPProcesser::read_bmp( const char* imageName )
 void BMPProcesser::write_bmp( const char* imageName )
 {
     LOG_DEBUG ( "BMPProcesser::write_bmp imageName = %s", imageName );
-    CFileWrapper file ( imageName, "wb");
+    _pih->display();
 
+    CFileWrapper file ( imageName, "wb");
     fwrite( &bf, sizeof(uint8), sizeof(bf), file.handle() );
     fwrite ( _pih->headerptr(), sizeof(uint8), _pih->headersize(), file.handle() );
     if ( _colorTable )
-        fwrite ( _colorTable, sizeof(uint8), _colorEntries * sizeof(RGBA32), file.handle() );
+	fwrite ( _colorTable, sizeof(uint8), _colorEntries * sizeof(RGBA32), file.handle() );
     fwrite( imageData, sizeof(uint8), _pih->imagesize(), file.handle() );
     LOG_DEBUG( "closing file ok" );
 }
@@ -127,11 +217,21 @@ void BMPProcesser::write_bmp( const char* imageName )
 bool BMPProcesser::image_negative()
 {       
     LOG_DEBUG ( "BMPProcesser::image_negative" );
-    RGBDATA* end = (RGBDATA*)((uint8*)imageData + _pih->imagesize() ), *p;
-    for ( p = (RGBDATA*)imageData; p!=end; ++p ) {
-        p->x = 255 - p->x;
-        p->y = 255 - p->y;
-        p->z = 255 - p->z;
+    switch(_pih->bitcount()){
+    case 32:
+	RGBA32* end = (RGBA32*)((uint8*)imageData + _pih->imagesize()),*p;
+	for( p = imageData;p!=end;p++ ){
+	    p->x = 256 - p->x;
+	    p->y = 256 - p->y;
+	    p->z = 256 - p->z;
+	}
+	break;
+    case 24:
+	break;
+    case 16:
+	break;
+    default:
+	break;
     }
     return true;
 }
@@ -154,7 +254,7 @@ bool BMPProcesser::imageToGray()
 
 // -------------------------------------------------------------------------------------------------
 
-bool BMPProcesser::pixelNormalization( void* tmp )//ÓÃÓÚ½«¼ÆËã¹ı³ÌÖĞµÃµ½µÄRGBÖµ×ª»¯Îª¶ÔÓ¦µÄ0-255Ö®¼ä
+bool BMPProcesser::pixelNormalization( void* tmp )//Ã“Ãï¿½Â“Ãš%GÃï¿½Â“%@ÂÂ«%GÃï¿½Â’%@Ãï¿½Â‹Ã£Â¹Ã½Â³ÃĞ£Â–Ãï¿½Ãï¿½µ%GÃï¿½Â“%@ÂµÃÂ„RGBÃï¿½Ãï¿½Â»Â¯ÂÃï¿½ªÂ¶Ã”ÃÂ“%GÃï¿½ %@ÂµÃÂ„0-255Ãï¿½%GÃï¿½Â’%@ÃÂ¤
 {
     if ( tmp == NULL || imageData == NULL )
         return false;
@@ -164,7 +264,7 @@ bool BMPProcesser::pixelNormalization( void* tmp )//ÓÃÓÚ½«¼ÆËã¹ı³ÌÖĞµÃµ½µÄRGBÖµ×
     minR = maxR = p->x;
     minG = maxG = p->y;
     minB = maxB = p->z;
-    //ÒÔÏÂÓÃÓÚ±éÀúËùÓĞÏñËØ£¬Ñ°ÕÒ×îĞ¡ÖµºÍ×î´óÖµ
+    //Ã’ÃÂ”Ãï¿½Ä‚Â“Ãï¿½Â“Ãï¿½Ã©ÃÂ€ÃºÃÂ‹Ã¹ÃÂ“ÃÃÃƒ±Ã‹Ãï¿½Â¬Ãï¿½Ã•ÃÂ’Ãï¿½Ãï¿½Ãï¿½ÂºÃÃƒï¿½%GÃï¿½½%@Ã³Ãï¿½
     for ( p ; p!=end; ++p ) {
         if ( p->x > maxR )
             maxR = p->x;
@@ -179,13 +279,13 @@ bool BMPProcesser::pixelNormalization( void* tmp )//ÓÃÓÚ½«¼ÆËã¹ı³ÌÖĞµÃµ½µÄRGBÖµ×
         if ( p->z < minB )
             minB = p->z;
     }
-    //ÕÒµ½×îÖµÖ®ºó£¬¼ÆËãÆä²î£¬µÃµ½ÏÂÃæµÄ¼ÆËãÏµÊı
+    //Ã•Ãï¿½%GÃï¿½Â“%@Ãï¿½Ãï¿½Ãï¿½ÂºÃ³Â£ÂÂ¬%GÃï¿½Â’%@Ãï¿½Â‹Ã£ÃÎ“¤Â²Ã®Â£Â¬ÂµÃÃ‚µ%GÃï¿½Â“%@Ãï¿½Ä‚ï¿½¦ÂµÃ„%GÃï¿½Â’%@Ãï¿½Â‹Ã£ÃÃ‚µÂÃï¿½½
     int diffR,diffG,diffB;
     diffR = 255/(maxR - minR);
     diffG = 255/(maxG - minG);
     diffB = 255/(maxB - minB);
     RGBDATA* q = (RGBDATA*)imageData;
-    //ÓÃÓÚ½«Ã¿¸öÏñËØÖµ×ª»»Îª 0-255Ö®¼ä
+    //Ã“Ãï¿½Â“Ãš%GÃï¿½Â“%@Â«ÃÃ‚¿%GÃï¿½¾%@Ã¶ÃÃƒ±Ã‹Ã˜Ãï¿½Ãï¿½Â»Â»ÂÃï¿½ª 0-255Ãï¿½%GÃï¿½Â’%@ÃÂ¤
     for ( p = (RGBINT*)tmp,q; p!=end; ++p ,++q) {
         q->x = p->x * diffR*(p->x - minR);
         q->y = p->y * diffG*(p->y - minG);
@@ -208,12 +308,12 @@ bool BMPProcesser::imageSoomth( int *matrix )
         denominator += matrix[i];
     if ( denominator == 0 )
         return false;
-    //ÉêÇë¿Ø¼ş£¬ÓÃÀ´»º´æÖĞ¼äµÄ¼ÆËã½á¹û
+    //Ãï¿½ªÂÃï¿½«Â¿Ã˜%GÃï¿½Â’%@Ã¾Â£Â¬Ã“Ãï¿½Â€%GÃï¿½½%@Â»Âº%GÃï¿½½%@Ã¦ÃÂ–Ã%GÃï¿½Â’%@Ã¤ÂµÃ„%GÃï¿½Â’%@Ãï¿½Â‹ÃÂ£%GÃï¿½Â“%@Ã¡Â¹Ã»
     void* tmp;
     tmp = malloc( _pih->imagesize()*2 );
     if ( tmp == NULL )
         return false;
-    //½«Ô­À´µÄÏñËØÖµ·Ö±ğ¸³Öµ¸ø¸ÕÉêÇëµÄµØÖ·
+    //%GÃï¿½Â“%@Â«Ãï¿½Ã€%GÃï¿½½%@ÂµÃÃƒÃƒ±Ã‹Ã˜Ãï¿½Â·Ãï¿½ÃÂ°%GÃï¿½¾%@Â³Ãï¿½%GÃï¿½¾%@ÃÂ¸%GÃï¿½¾%@Ã•Ãï¾ƒªÂÃï¿½«ÂµÃï¿½µÃ˜Ãï¿½
     RGBDATA* pEnd = (RGBDATA*)( (uint8*)imageData + _pih->imagesize() );
     RGBDATA* p  = (RGBDATA*)imageData;
     RGBINT* q = (RGBINT*)tmp;
@@ -222,7 +322,7 @@ bool BMPProcesser::imageSoomth( int *matrix )
         q->y = p->y;
         q->z = p->z;
     }
-    //½øĞĞÖĞ¼äµÄ¼ÆËã£¬½«½á¹ûÔİÊ±´æÔÚĞÂÉêÇëµÄÕûĞÍ¿Õ¼äÀï
+    //%GÃï¿½Â“%@Ã¸ÃÂÃÃÂ–Ã%GÃï¿½Â’%@Ã¤ÂµÃ„%GÃï¿½Â’%@Ãï¿½Â‹Ã£Â£Â¬%GÃï¿½Â“%@ÂÂ«%GÃï¿½Â“%@Ã¡Â¹Ã»Ã”ÃÂÃï¿½±%GÃï¿½½%@Ã¦ÃÂ”ÃšÃÂÃï¿½ï¾ƒªÂÃï¿½«ÂµÃï¿½ï¿½ÃÃÃ‚¿Ã•%GÃï¿½Â’%@Ã¤ÃÂ€ÃÂ¯
     RGBINT* pCurrent  = (RGBINT*)tmp;
     q = (RGBINT*)tmp;
     for ( int j = 1; j < _pih->height()-1; j++ ){
@@ -244,10 +344,10 @@ bool BMPProcesser::imageSoomth( int *matrix )
             pCurrent->z = sumb/denominator;
         }
     }
-    //¶ÔÕûĞÍ¿Õ¼äÄÚÊı¾İ½øĞĞ¹éÒ»´¦Àí£¬½«½á¹û±£´æµ½Ó°ÏìÊı¾İÄÚ
+    //Â¶ÃÂ”Ãï¿½ÃÃÃ‚¿Ã•%GÃï¿½Â’%@Ã¤ÃÃƒÂšÃï¿½½%GÃï¿½¸%@Ã%GÃï¿½Â“%@Ã¸ÃÂÃï¿½Ã©Ãï¿½%GÃï¿½½ÂÃï¿½ %@Ã€Ã­Â£ÂÂ¬%GÃï¿½Â“%@ÂÂ«%GÃï¿½Â“%@Ã¡Â¹Ã»Â±Â£%GÃï¿½½%@Ã¦Âµ%GÃï¿½Â“%@Ãï¿½Ãï¿½¬ÂÃï¿½½%GÃï¿½¸%@ÃÃÃƒÂš
     if (!pixelNormalization( tmp ))
         return false;
-    free( tmp );ptr
+    free( tmp );
     return true;        
 }
 
@@ -295,32 +395,42 @@ void BMPProcesser::to_24bit ()
     switch ( _pih->bitcount() ) {
     case 32:
         newdata = changebitcnt_32to24 ( imageData, newsize );
-        _pih->bitcount( 24 );
-        bf.bfSize = bf.bfSize - _pih->imagesize() + newsize;
-        free(imageData);
-        imageData = newdata;
-        _pih->imagesize( newsize );
         break;
     case 16:
         newdata = changebitcnt_16to24 ( imageData, newsize );
-        _pih->bitcount( 24 );
-        bf.bfSize = bf.bfSize - _pih->imagesize() + newsize;
-        free(imageData);
-        imageData = newdata;
-        _pih->imagesize( newsize );
         break;
     case 8:
-	break;
+        throw std::logic_error ("not support 8 bitcount now");
     case 4:
         newdata = changebitcnt_4to24 ( imageData, newsize, _colorTable );
-        _pih->bitcount( 24 );
-        bf.bfSize = bf.bfSize - _pih->imagesize() + newsize;
+        LOG_INFO ( "newsize = %d, width = %d, height = %d", newsize, _pih->width(), newsize / (_pih->width() * 3) );
+// 	dump24 ( (RGB24*)newdata, _pih->width(), newsize / (_pih->width() * 3) );
+        break;
+    default:
+        throw std::logic_error ("not support bitcount");
+    }
+
+    // modify data section
+    if ( imageData && newdata ) {
         free(imageData);
         imageData = newdata;
-        _pih->imagesize( newsize );
-        break;
-	break;
     }
+
+    // remove color table if there have
+    if ( _colorTable ) {
+        free ( _colorTable );
+        _colorTable = 0;
+    }
+
+    // modify info header
+    _pih->bitcount( 24 );
+    _pih->imagesize( newsize );
+
+    // modify file header
+    bf.bfSize = sizeof(bf) + _pih->headersize() +  _pih->imagesize();
+    bf.bfOffBits = sizeof(bf) + _pih->headersize();
+
+
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -329,7 +439,7 @@ void* changebitcnt_4to24 ( void* data, int32& size, RGBA32* colorTable )
 {
     LOG_DEBUG ("changebitcnt_4to24 data=%0x, size=%d, colorTable=%0x", data, size, colorTable);
     uint8* p = (uint8*)data;
-    uint8* end = (uint8*)((uint8*)data+size);
+    uint8* end = p+size;
     RGB24* ptr = (RGB24*)malloc( size * 3 );
     RGB24* pbegin = ptr;
     
@@ -339,6 +449,7 @@ void* changebitcnt_4to24 ( void* data, int32& size, RGBA32* colorTable )
         ptr->z = colorTable[*p].z;
     }
     size = ((int8*)ptr - (int8*)pbegin);
+
     return (void*)pbegin;
 }
 
@@ -426,13 +537,45 @@ void* decode_rle8 ( void* data, int32 size, int32 width, int32 height )
 }
 
 // -------------------------------------------------------------------------------------------------
+void dump8 (uint8* data, int32 width, int32 height )
+{
+    LOG_DEBUG ( "dump8 data=%0x, width=%d, height=%d", data, width, height );
+    uint8* p = data;
+    for ( int i=0; i<width; i++ ) {
+	char tmp[4096] = {0};
+	for ( int j=0; j<height; j++ ) {
+	    if ( *p++ == 0 )
+		sprintf ( tmp, "%s%2d", tmp, 0 );
+	    else
+		sprintf ( tmp, "%s%2d", tmp, 1 );
+	}
+	LOG_INFO ( tmp );
+    }
+}
 
-void* decode_rle4 ( void* data, int32 size, int32 width, int32 height )
+void dump24 (RGB24* data, int32 width, int32 height )
+{
+    LOG_DEBUG ( "dump8 data=%0x, width=%d, height=%d", data, width, height );
+    RGB24* p = data;
+    for ( int i=0; i<width; i++ ) {
+	char tmp[4096] = {0};
+	for ( int j=0; j<height; j++ ) {
+	    if ( p->x || p->y || p->z )
+		sprintf ( tmp, "%s%2d ", tmp, 1 );
+	    else
+		sprintf ( tmp, "%s%2d ", tmp, 0 );
+	    ++p;
+	}
+	LOG_INFO ( tmp );
+    }
+}
+
+void* decode_rle4 ( void* data, int32 size, int32& width, int32& height )
 {
     LOG_DEBUG ( "decompress_rle4 data=%0xd, size=%d, width=%d, height=%d", data, size, width, height );
     uint8* p = (uint8*)data;
     uint8* end = (uint8*)data + size;
-
+    width = width % 2 ? width + 1 : width;
     uint8* dst = (uint8*)malloc ( width * height );
     uint8* pbegin = dst;
 
@@ -453,9 +596,13 @@ void* decode_rle4 ( void* data, int32 size, int32 width, int32 height )
             switch ( next ) {
             case 0:     // end of line, check column number
                 if ( (dst - pbegin) % width ) {
-		    char tmp[512];
-		    sprintf ( tmp, "(%0x, %0x, %0x, %0x, %0x, %0x, %0x), column number incorrect, offset from image data begin = %x,  (%0x, %0x, %0x, %0x, %0x, %0x, %0x)", *pdata, *(pdata+1), *(pdata+2), *(pdata+3), *(pdata+4), *(pdata+5), *(pdata+6), p - (uint8*)data, *(p-3), *(p-2), *(p-1), *p, *(p+1), *(p+2), *(p+3) );
-                    throw std::logic_error ( tmp );
+		    *(++dst) = 0;
+		    if ( (dst - pbegin) % width ) {
+			char tmp[512];
+			sprintf ( tmp, "column number incorrect, context are = (%0x, %0x, %0x, %0x, %0x, %0x, %0x, %0x)", 
+			      *(p-6), *(p-5), *(p-4), *(p-3), *(p-2), *(p-1), *p, *(p+1) );
+			throw std::logic_error ( tmp );
+		    }
                 }
                 break;
             case 1:     // end of bitmap
@@ -477,7 +624,7 @@ void* decode_rle4 ( void* data, int32 size, int32 width, int32 height )
 		
 		cnt = (int)(next / 4) + (next % 4 != 0 ? 1 : 0);
 		cnt *= 2;
-		p += cnt;
+ 		p += cnt;
                 break;
             }
         }

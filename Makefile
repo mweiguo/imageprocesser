@@ -6,16 +6,16 @@ all : im.exe
 im.exe : test.o bmp.o log.o clip.o
 	g++ test.o bmp.o log.o clip.o -o im.exe
 
-log.o : tinylog.cpp tinylog.h Makefile
-	g++ -c $(CPPFLAG) tinylog.cpp -o log.o
+log.o : tinyLog.cpp stdafx.h Makefile
+	g++ -c $(CPPFLAG) tinyLog.cpp -o log.o
 
-test.o : test.cpp Makefile
+test.o : test.cpp stdafx.h BMP.h clip.h Makefile 
 	g++ -c $(CPPFLAG) test.cpp
 
-bmp.o : bmp.cpp bmp.h Makefile
-	g++ -c $(CPPFLAG) bmp.cpp
+bmp.o : BMP.cpp BMP.h stdafx.h Makefile
+	g++ -c $(CPPFLAG) BMP.cpp -o bmp.o
 
-clip.o : clip.c clip.h funcs.c Makefile
+clip.o : clip.c clip.h funcs.c stdafx.h Makefile
 	g++ -c $(CPPFLAG) clip.c funcs.c
 
 clean : 

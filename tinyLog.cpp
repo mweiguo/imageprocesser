@@ -232,7 +232,7 @@ void tinyLog::log ( const char* fname, const char* filename, int lineno, tinyLog
 	    }
 	}
     }
-    char buffer[512] = {0};
+    char buffer[4096] = {0};
     va_list vl;
     va_start ( vl, format );
     vsprintf ( buffer, format, vl );
