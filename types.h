@@ -42,17 +42,3 @@ struct R5G6B5 {
 };
 
 
-// ---------- inner image format
-
-struct ImageHeader {
-    uint32 width;
-    uint32 height;
-    uint16 bitCount;
-};
-
-struct Image {
-    ImageHeader  _imageHeader;                // general image's properties
-    RGBA32*      _colorTable;                 // color table entries
-    int          _colorEntries;               // color table entry's count
-    void*        imageData;                   // data section
-};

@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <sstream>
 #include <cstdlib>
+#include <png.h>
+
 
 #include "tinyLog.h"
 #include "types.h"
